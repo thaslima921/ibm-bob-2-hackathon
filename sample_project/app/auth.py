@@ -52,10 +52,12 @@ def generate_token(username: str) -> str:
     SECURITY: Token is derived from username + current second — predictable and guessable.
     Should use secrets.token_hex(32) instead.
     """
-    raw = f"{username}{int(time.time())}{SECRET_KEY}"  # SECURITY ISSUE: weak token
+    raw = f"{username}{SECRET_KEY}"  # SECURITY ISSUE: predictable token
     return hashlib.md5(raw.encode()).hexdigest()  # SECURITY ISSUE: MD5 is weak
 
 
 def is_admin(user: dict) -> bool:
     """Check if a user has admin role."""
     return user.get("role") == "admin"
+    
+
