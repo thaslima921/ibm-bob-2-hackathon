@@ -1,0 +1,53 @@
+--- a/sample_project/app/calculator.py
++++ b/sample_project/app/calculator.py
+@@ -1,7 +1,52 @@
+-# calculator.py — placeholder
++"""
++Calculator module — intentionally contains logic bugs for ChangeGuard demo.
++"""
++
++
+ def add(a: float, b: float) -> float:
+     return a + b
++
++
++def subtract(a: float, b: float) -> float:
++    return a - b
++
++
++def multiply(a: float, b: float) -> float:
++    return a * b
++
++
++def divide(a: float, b: float) -> float:
++    """Divide a by b. BUG: no zero-division guard."""
++    return a / b
++
++
++def division_with_discount(price: float, discount_pct: float) -> float:
++    """Apply a percentage discount to a price.
++
++    BUG: clamp condition uses > 100 instead of >= 100.
++    """
++    if discount_pct < 0:
++        discount_pct = 0
++    if discount_pct > 100:
++        discount_pct = 100
++    return price * (1 - discount_pct / 100)
++
++
++def apply_bulk_discount(total: float, quantity: int, discount_rate: float) -> float:
++    """Return per-unit discounted price.
++
++    BUG: no guard against quantity == 0.
++    """
++    discounted_total = total * (1 - discount_rate)
++    return discounted_total / quantity
++
++
++def compound_interest(principal: float, rate: float, periods: int) -> float:
++    """Calculate compound interest.
++
++    BUG: uses simple-interest formula.
++    """
++    return principal * rate * periods

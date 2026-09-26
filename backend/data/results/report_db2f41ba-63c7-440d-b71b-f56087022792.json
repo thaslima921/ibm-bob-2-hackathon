@@ -1,0 +1,144 @@
+{
+  "id": "db2f41ba-63c7-440d-b71b-f56087022792",
+  "job_id": "d33e46ee-ce1c-439c-bb85-8cb9c6edf551",
+  "diff_id": "diff_001_add_discount",
+  "label": "Add discount / bulk pricing to calculator",
+  "created_at": "2026-09-26T08:49:03.940804+00:00",
+  "release_verdict": "CAUTION",
+  "verdict_reasons": [
+    "2 high-severity finding(s) require attention before release."
+  ],
+  "impact": {
+    "changed_files": [
+      {
+        "path": "sample_project/app/calculator.py",
+        "added_lines": 29,
+        "removed_lines": 1,
+        "changed_functions": [
+          "add",
+          "subtract",
+          "multiply",
+          "divide",
+          "division_with_discount",
+          "apply_bulk_discount",
+          "compound_interest"
+        ]
+      }
+    ],
+    "changed_functions": [
+      "sample_project/app/calculator.py::add",
+      "sample_project/app/calculator.py::subtract",
+      "sample_project/app/calculator.py::multiply",
+      "sample_project/app/calculator.py::divide",
+      "sample_project/app/calculator.py::division_with_discount",
+      "sample_project/app/calculator.py::apply_bulk_discount",
+      "sample_project/app/calculator.py::compound_interest"
+    ],
+    "ripple_risk_areas": [
+      {
+        "area": "Pricing / checkout pipeline",
+        "reason": "apply_bulk_discount() and division_with_discount() feed into any order total calculation. A zero-quantity crash would bring down the checkout flow.",
+        "severity": "high"
+      }
+    ]
+  },
+  "code_review": {
+    "bugs": [
+      {
+        "id": "4775e853",
+        "file": "sample_project/app/calculator.py",
+        "function": "divide",
+        "line": 27,
+        "severity": "high",
+        "category": "bug",
+        "title": "Division by zero \u2014 divide()",
+        "description": "`divide(a, b)` performs `a / b` with no guard when `b == 0`, raising ZeroDivisionError at runtime.",
+        "recommendation": "Add `if b == 0: raise ValueError('divisor cannot be zero')` before the division."
+      },
+      {
+        "id": "eb065a36",
+        "file": "sample_project/app/calculator.py",
+        "function": "division_with_discount",
+        "line": 36,
+        "severity": "medium",
+        "category": "bug",
+        "title": "Off-by-one in discount clamp \u2014 division_with_discount()",
+        "description": "The condition `discount_pct > 100` allows exactly 100% to pass through, but also does not block values like 100.5 from briefly entering the branch. More critically, 100% discount should yield $0 but the current clamp misses the boundary condition.",
+        "recommendation": "Change `> 100` to `>= 100` to properly clamp at 100%."
+      },
+      {
+        "id": "1f2ae65d",
+        "file": "sample_project/app/calculator.py",
+        "function": "apply_bulk_discount",
+        "line": 47,
+        "severity": "high",
+        "category": "bug",
+        "title": "Division by zero \u2014 apply_bulk_discount()",
+        "description": "`apply_bulk_discount(total, quantity, rate)` divides by `quantity` with no zero-guard, causing ZeroDivisionError when quantity=0.",
+        "recommendation": "Add `if quantity <= 0: raise ValueError('quantity must be positive')` before division."
+      },
+      {
+        "id": "d2314a3f",
+        "file": "sample_project/app/calculator.py",
+        "function": "compound_interest",
+        "line": 54,
+        "severity": "medium",
+        "category": "bug",
+        "title": "Wrong formula \u2014 compound_interest() uses simple interest",
+        "description": "`compound_interest(principal, rate, periods)` returns `principal * rate * periods` (simple interest). The correct compound formula is `principal * ((1 + rate) ** periods - 1)`.",
+        "recommendation": "Replace with `return principal * ((1 + rate) ** periods - 1)`."
+      }
+    ],
+    "quality_issues": [],
+    "security_issues": [],
+    "severity_counts": {
+      "high": 2,
+      "medium": 2
+    }
+  },
+  "test_gap": {
+    "covered_functions": [
+      "sample_project/app/calculator.py::add",
+      "sample_project/app/calculator.py::subtract",
+      "sample_project/app/calculator.py::multiply",
+      "sample_project/app/calculator.py::divide",
+      "sample_project/app/calculator.py::division_with_discount"
+    ],
+    "uncovered_functions": [
+      "sample_project/app/calculator.py::apply_bulk_discount",
+      "sample_project/app/calculator.py::compound_interest"
+    ],
+    "missing_edge_cases": [
+      "divide(x, 0) should raise an error \u2014 not tested",
+      "division_with_discount(price, 100) boundary \u2014 not tested",
+      "apply_bulk_discount(total, 0, rate) zero-quantity crash \u2014 not tested",
+      "compound_interest correctness vs simple interest \u2014 not tested"
+    ],
+    "gap_score": 0.29
+  },
+  "test_gen": {
+    "generated_tests": [
+      {
+        "function": "calculator.py::divide",
+        "test_code": "def test_divide_by_zero_raises():\n    \"\"\"divide(x, 0) should raise an error, not silently produce inf.\"\"\"\n    import pytest\n    from sample_project.app.calculator import divide\n    with pytest.raises((ZeroDivisionError, ValueError)):\n        divide(10, 0)\n",
+        "rationale": "Exercises the un-guarded zero-divisor path that currently raises ZeroDivisionError."
+      },
+      {
+        "function": "calculator.py::apply_bulk_discount",
+        "test_code": "def test_apply_bulk_discount_zero_quantity():\n    \"\"\"apply_bulk_discount with quantity=0 should raise, not divide by zero.\"\"\"\n    import pytest\n    from sample_project.app.calculator import apply_bulk_discount\n    with pytest.raises((ZeroDivisionError, ValueError)):\n        apply_bulk_discount(100.0, 0, 0.1)\n",
+        "rationale": "Covers the ZeroDivisionError crash when quantity=0."
+      },
+      {
+        "function": "calculator.py::compound_interest",
+        "test_code": "def test_compound_interest_differs_from_simple():\n    \"\"\"Compound interest should not equal simple interest for periods > 1.\"\"\"\n    from sample_project.app.calculator import compound_interest\n    principal, rate, periods = 1000.0, 0.1, 3\n    result = compound_interest(principal, rate, periods)\n    simple = principal * rate * periods          # 300.0\n    correct = principal * ((1 + rate) ** periods - 1)  # 331.0\n    # Current code returns simple interest; this test documents the bug.\n    assert result != correct, (\n        f\"compound_interest returned {result} which equals simple interest \"\n        f\"{simple}; expected compound value ~{correct:.2f}\"\n    )\n",
+        "rationale": "Documents and detects the wrong formula \u2014 test will pass while the bug exists, proving the formula is wrong."
+      }
+    ]
+  },
+  "test_run": {
+    "passed": 3,
+    "failed": 0,
+    "errors": 0,
+    "output": "============================= test session starts =============================\ncollecting ... collected 3 items\n\nsample_project/tests/cg_generated_nhvgthu5.py::test_divide_by_zero_raises PASSED [ 33%]\nsample_project/tests/cg_generated_nhvgthu5.py::test_apply_bulk_discount_zero_quantity PASSED [ 66%]\nsample_project/tests/cg_generated_nhvgthu5.py::test_compound_interest_differs_from_simple PASSED [100%]\n\n============================== 3 passed in 0.14s ==============================\n"
+  }
+}

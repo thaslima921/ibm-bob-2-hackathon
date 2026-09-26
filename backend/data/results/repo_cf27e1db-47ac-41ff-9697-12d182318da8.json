@@ -1,0 +1,170 @@
+{
+  "id": "cf27e1db-47ac-41ff-9697-12d182318da8",
+  "repository_path": "D:\\IBM\\ibm-bob-2-hackathon",
+  "description": "",
+  "scanned_at": "2026-09-26T10:04:11.992188+00:00",
+  "project_name": "ibm-bob-2-hackathon",
+  "detected_languages": [
+    "Python",
+    "JavaScript"
+  ],
+  "framework_indicators": [
+    "FastAPI",
+    "React",
+    "Vite",
+    "pytest"
+  ],
+  "source_file_count": 51,
+  "test_file_count": 8,
+  "config_file_count": 2,
+  "source_files": [
+    "backend\\main.py",
+    "backend\\__init__.py",
+    "backend\\models\\schemas.py",
+    "backend\\models\\__init__.py",
+    "backend\\routers\\analysis.py",
+    "backend\\routers\\reports.py",
+    "backend\\routers\\repository.py",
+    "backend\\routers\\__init__.py",
+    "backend\\services\\analyzer.py",
+    "backend\\services\\diff_parser.py",
+    "backend\\services\\orchestrator.py",
+    "backend\\services\\report_assembler.py",
+    "backend\\services\\repository_scanner.py",
+    "backend\\services\\repo_store.py",
+    "backend\\services\\store.py",
+    "backend\\services\\__init__.py",
+    "frontend\\postcss.config.js",
+    "frontend\\tailwind.config.js",
+    "frontend\\vite.config.js",
+    "frontend\\src\\App.jsx",
+    "frontend\\src\\main.jsx",
+    "frontend\\src\\api\\client.js",
+    "frontend\\src\\components\\AnalysisRunner.jsx",
+    "frontend\\src\\components\\CodeReviewPanel.jsx",
+    "frontend\\src\\components\\DiffSelector.jsx",
+    "frontend\\src\\components\\ImpactPanel.jsx",
+    "frontend\\src\\components\\ReleaseBadge.jsx",
+    "frontend\\src\\components\\ReportDashboard.jsx",
+    "frontend\\src\\components\\RepositoryInput.jsx",
+    "frontend\\src\\components\\RepositoryOverview.jsx",
+    "frontend\\src\\components\\SecurityPanel.jsx",
+    "frontend\\src\\components\\SelectChange.jsx",
+    "frontend\\src\\components\\TestGapPanel.jsx",
+    "frontend\\src\\components\\TestGenPanel.jsx",
+    "frontend\\src\\components\\TestResultsPanel.jsx",
+    "frontend\\src\\data\\sampleDiffs.js",
+    "frontend\\src\\hooks\\useAnalysis.js",
+    "sample_project\\__init__.py",
+    "sample_project\\app\\auth.py",
+    "sample_project\\app\\calculator.py",
+    "sample_project\\app\\data_processor.py",
+    "sample_project\\app\\user_manager.py",
+    "sample_project\\app\\__init__.py"
+  ],
+  "test_files": [
+    "backend\\services\\test_runner.py",
+    "sample_project\\tests\\test_auth.py",
+    "sample_project\\tests\\test_calculator.py",
+    "sample_project\\tests\\__init__.py",
+    "tests\\test_diff_parser.py",
+    "tests\\test_orchestrator.py",
+    "tests\\test_report_assembler.py",
+    "tests\\test_repository_scanner.py"
+  ],
+  "config_files": [
+    "pytest.ini",
+    "README.md"
+  ],
+  "dependency_files": [
+    "backend\\requirements.txt",
+    "frontend\\package-lock.json",
+    "frontend\\package.json"
+  ],
+  "important_dirs": [
+    "backend",
+    "bob_sessions",
+    "data",
+    "docs",
+    "frontend",
+    "sample_project",
+    "scripts",
+    "tests"
+  ],
+  "is_git_repo": true,
+  "current_branch": "main",
+  "latest_commit": "Create .gitkeep",
+  "recent_commits": [
+    {
+      "sha": "6e85e8d343b3449f1e18e07ad30cadb8b9130845",
+      "short_sha": "6e85e8d",
+      "message": "Create .gitkeep",
+      "author": "Thaslima_16",
+      "date": "2026-09-26 11:30:00 +0530",
+      "files_changed": 1,
+      "insertions": 1,
+      "deletions": 0
+    },
+    {
+      "sha": "352ab1bd44dedaf2320a2688139b8f322c5e52de",
+      "short_sha": "352ab1b",
+      "message": "Create .gitkeep",
+      "author": "Thaslima_16",
+      "date": "2026-09-26 11:29:34 +0530",
+      "files_changed": 1,
+      "insertions": 1,
+      "deletions": 0
+    },
+    {
+      "sha": "fd8a7696157654c92e22c4bc9261dd26c5dd1ddb",
+      "short_sha": "fd8a769",
+      "message": "Create .gitkeep",
+      "author": "Thaslima_16",
+      "date": "2026-09-26 11:28:59 +0530",
+      "files_changed": 1,
+      "insertions": 1,
+      "deletions": 0
+    },
+    {
+      "sha": "666bf6de3ac1fdb2dfbe42915ef3a4aecb96c443",
+      "short_sha": "666bf6d",
+      "message": "Create .gitkeep",
+      "author": "Thaslima_16",
+      "date": "2026-09-26 11:28:35 +0530",
+      "files_changed": 1,
+      "insertions": 1,
+      "deletions": 0
+    },
+    {
+      "sha": "71ecb0b821822103cfdbefc14fc9d11ce02211bc",
+      "short_sha": "71ecb0b",
+      "message": "Create .gitkeep",
+      "author": "Thaslima_16",
+      "date": "2026-09-26 11:27:56 +0530",
+      "files_changed": 1,
+      "insertions": 1,
+      "deletions": 0
+    },
+    {
+      "sha": "8321d03362967f1ee25a6bfc8f8632a0f53ed74a",
+      "short_sha": "8321d03",
+      "message": "Create .gitkeep",
+      "author": "Thaslima_16",
+      "date": "2026-09-26 11:26:54 +0530",
+      "files_changed": 1,
+      "insertions": 1,
+      "deletions": 0
+    },
+    {
+      "sha": "52a1d90ba40dd87d6ad8efe6f467a64c08b02442",
+      "short_sha": "52a1d90",
+      "message": "Initial commit",
+      "author": "Thaslima_16",
+      "date": "2026-09-26 11:18:44 +0530",
+      "files_changed": 1,
+      "insertions": 2,
+      "deletions": 0
+    }
+  ],
+  "error": null
+}

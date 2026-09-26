@@ -1,0 +1,16 @@
+{
+  "id": "7a132c04-544b-4fb2-a6a6-915a1e4cb616",
+  "status": "complete",
+  "diff_id": "diff_001_add_discount",
+  "label": "Add discount / bulk pricing to calculator",
+  "created_at": "2026-09-26T08:27:45.825611+00:00",
+  "subagent_status": {
+    "impact": "done",
+    "code_review": "done",
+    "test_gap": "done",
+    "test_gen": "done",
+    "test_run": "done"
+  },
+  "report_id": "b994d0f4-b9b5-498d-9b2d-9e9ce259af15",
+  "error": null
+}

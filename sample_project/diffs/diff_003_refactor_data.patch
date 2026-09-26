@@ -1,0 +1,61 @@
+--- a/sample_project/app/data_processor.py
++++ b/sample_project/app/data_processor.py
+@@ -1,5 +1,66 @@
+-# data_processor.py — placeholder
++"""
++Data processor module refactor — SQL injection and path traversal remain.
++"""
++import sqlite3
++import os
++
++
++def build_query(table: str, user_filter: str) -> str:
++    """Build a SQL SELECT query.
++
++    SECURITY: SQL injection via unsanitised f-string.
++    """
++    return f"SELECT * FROM {table} WHERE name = '{user_filter}'"
++
++
++def fetch_records(conn: sqlite3.Connection, table: str, user_filter: str) -> list:
++    """Fetch records matching a filter."""
++    query = build_query(table, user_filter)
++    cursor = conn.execute(query)
++    return cursor.fetchall()
++
++
++def process_user_input(data: dict) -> dict:
++    """Process and normalise user-supplied input.
++
++    BUG: No validation of 'amount' key or type.
++    """
++    amount = data["amount"]
++    label = data.get("label", "")
++    return {"amount": float(amount), "label": label.strip()}
++
++
++def export_data(records: list, filename: str) -> str:
++    """Write records to a file.
++
++    SECURITY: Path traversal via unsanitised filename.
++    """
++    export_dir = "exports"
++    os.makedirs(export_dir, exist_ok=True)
++    full_path = os.path.join(export_dir, filename)
++    with open(full_path, "w") as f:
++        for record in records:
++            f.write(str(record) + "\n")
++    return full_path
++
++
+ def calculate_statistics(values: list) -> dict:
+-    return {}
++    """Return basic statistics for a list of numbers."""
++    if not values:
++        return {"min": None, "max": None, "mean": None, "count": 0}
++    return {
++        "min": min(values),
++        "max": max(values),
++        "mean": sum(values) / len(values),
++        "count": len(values),
++    }

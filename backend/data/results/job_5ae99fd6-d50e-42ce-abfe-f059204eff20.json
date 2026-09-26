@@ -1,0 +1,16 @@
+{
+  "id": "5ae99fd6-d50e-42ce-abfe-f059204eff20",
+  "status": "complete",
+  "diff_id": "diff_003_refactor_data",
+  "label": "Refactor data processor (SQL + exports)",
+  "created_at": "2026-09-26T08:28:58.944509+00:00",
+  "subagent_status": {
+    "impact": "done",
+    "code_review": "done",
+    "test_gap": "done",
+    "test_gen": "done",
+    "test_run": "done"
+  },
+  "report_id": "cf8683d7-adf0-4d74-a555-76f77687ffda",
+  "error": null
+}

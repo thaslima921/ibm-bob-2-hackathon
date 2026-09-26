@@ -1,0 +1,44 @@
+{
+  "id": "29bbc7fd-7c66-47be-89ec-d50f6f220a53",
+  "job_id": "95341ac9-dfce-4791-b4dc-1f5d2890aecd",
+  "diff_id": "commit_666bf6d",
+  "label": "Create .gitkeep",
+  "created_at": "2026-09-26T10:03:44.533337+00:00",
+  "release_verdict": "CAUTION",
+  "verdict_reasons": [
+    "Test coverage gap is 100% \u2014 too many untested functions."
+  ],
+  "impact": {
+    "changed_files": [
+      {
+        "path": "data/.gitkeep",
+        "added_lines": 1,
+        "removed_lines": 0,
+        "changed_functions": []
+      }
+    ],
+    "changed_functions": [],
+    "ripple_risk_areas": []
+  },
+  "code_review": {
+    "bugs": [],
+    "quality_issues": [],
+    "security_issues": [],
+    "severity_counts": {}
+  },
+  "test_gap": {
+    "covered_functions": [],
+    "uncovered_functions": [],
+    "missing_edge_cases": [],
+    "gap_score": 1.0
+  },
+  "test_gen": {
+    "generated_tests": []
+  },
+  "test_run": {
+    "passed": 9,
+    "failed": 0,
+    "errors": 0,
+    "output": "============================= test session starts =============================\ncollecting ... collected 9 items\n\nsample_project/tests/test_auth.py::test_hash_password_returns_string PASSED [ 11%]\nsample_project/tests/test_auth.py::test_verify_password_correct PASSED   [ 22%]\nsample_project/tests/test_auth.py::test_login_success PASSED             [ 33%]\nsample_project/tests/test_auth.py::test_generate_token_returns_string PASSED [ 44%]\nsample_project/tests/test_calculator.py::test_add PASSED                 [ 55%]\nsample_project/tests/test_calculator.py::test_subtract PASSED            [ 66%]\nsample_project/tests/test_calculator.py::test_multiply PASSED            [ 77%]\nsample_project/tests/test_calculator.py::test_divide_happy_path PASSED   [ 88%]\nsample_project/tests/test_calculator.py::test_division_with_discount_basic PASSED [100%]\n\n============================== 9 passed in 0.13s ==============================\n"
+  }
+}

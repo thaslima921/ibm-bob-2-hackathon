@@ -1,0 +1,37 @@
+{
+  "id": "ef751b90-99e5-4d72-a07b-e7fff809e2ba",
+  "job_id": "b13fc14a-6f86-4cc5-b2ce-ea67f49d7bf4",
+  "diff_id": "custom_diff",
+  "label": "Custom diff",
+  "created_at": "2026-09-26T09:15:54.958504+00:00",
+  "release_verdict": "CAUTION",
+  "verdict_reasons": [
+    "Test coverage gap is 100% \u2014 too many untested functions."
+  ],
+  "impact": {
+    "changed_files": [],
+    "changed_functions": [],
+    "ripple_risk_areas": []
+  },
+  "code_review": {
+    "bugs": [],
+    "quality_issues": [],
+    "security_issues": [],
+    "severity_counts": {}
+  },
+  "test_gap": {
+    "covered_functions": [],
+    "uncovered_functions": [],
+    "missing_edge_cases": [],
+    "gap_score": 1.0
+  },
+  "test_gen": {
+    "generated_tests": []
+  },
+  "test_run": {
+    "passed": 9,
+    "failed": 0,
+    "errors": 0,
+    "output": "============================= test session starts =============================\ncollecting ... collected 9 items\n\nsample_project/tests/test_auth.py::test_hash_password_returns_string PASSED [ 11%]\nsample_project/tests/test_auth.py::test_verify_password_correct PASSED   [ 22%]\nsample_project/tests/test_auth.py::test_login_success PASSED             [ 33%]\nsample_project/tests/test_auth.py::test_generate_token_returns_string PASSED [ 44%]\nsample_project/tests/test_calculator.py::test_add PASSED                 [ 55%]\nsample_project/tests/test_calculator.py::test_subtract PASSED            [ 66%]\nsample_project/tests/test_calculator.py::test_multiply PASSED            [ 77%]\nsample_project/tests/test_calculator.py::test_divide_happy_path PASSED   [ 88%]\nsample_project/tests/test_calculator.py::test_division_with_discount_basic PASSED [100%]\n\n============================== 9 passed in 0.04s ==============================\n"
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "id": "cf8683d7-adf0-4d74-a555-76f77687ffda",
+  "job_id": "5ae99fd6-d50e-42ce-abfe-f059204eff20",
+  "diff_id": "diff_003_refactor_data",
+  "label": "Refactor data processor (SQL + exports)",
+  "created_at": "2026-09-26T08:28:59.551739+00:00",
+  "release_verdict": "BLOCK",
+  "verdict_reasons": [
+    "1 critical finding(s) detected \u2014 immediate remediation required."
+  ],
+  "impact": {
+    "changed_files": [
+      {
+        "path": "sample_project/app/data_processor.py",
+        "added_lines": 32,
+        "removed_lines": 2,
+        "changed_functions": [
+          "calculate_statistics",
+          "build_query",
+          "fetch_records",
+          "process_user_input",
+          "export_data"
+        ]
+      }
+    ],
+    "changed_functions": [
+      "sample_project/app/data_processor.py::calculate_statistics",
+      "sample_project/app/data_processor.py::build_query",
+      "sample_project/app/data_processor.py::fetch_records",
+      "sample_project/app/data_processor.py::process_user_input",
+      "sample_project/app/data_processor.py::export_data"
+    ],
+    "ripple_risk_areas": [
+      {
+        "area": "Database layer",
+        "reason": "SQL injection in build_query() can expose or corrupt the entire database.",
+        "severity": "critical"
+      },
+      {
+        "area": "File system",
+        "reason": "Path traversal in export_data() can write to arbitrary filesystem locations.",
+        "severity": "high"
+      }
+    ]
+  },
+  "code_review": {
+    "bugs": [
+      {
+        "id": "8f8b48b8",
+        "file": "sample_project/app/data_processor.py",
+        "function": "process_user_input",
+        "line": 35,
+        "severity": "medium",
+        "category": "bug",
+        "title": "Missing input validation in process_user_input()",
+        "description": "`process_user_input()` accesses `data['amount']` without checking whether the key exists (KeyError) or whether the value is numeric (ValueError on `float(amount)`).",
+        "recommendation": "Validate input with explicit checks or a Pydantic model before processing."
+      }
+    ],
+    "quality_issues": [],
+    "security_issues": [
+      {
+        "id": "b8da3dac",
+        "file": "sample_project/app/data_processor.py",
+        "function": "build_query",
+        "line": 18,
+        "severity": "critical",
+        "category": "security",
+        "title": "SQL injection via f-string query \u2014 build_query()",
+        "description": "`build_query(table, user_filter)` constructs SQL by directly interpolating user-supplied strings: `f\"SELECT * FROM {table} WHERE name = '{user_filter}'\"`. An attacker can inject arbitrary SQL.",
+        "recommendation": "Use parameterised queries: `cursor.execute('SELECT * FROM ? WHERE name = ?', (table, filter))`."
+      },
+      {
+        "id": "4b4040d8",
+        "file": "sample_project/app/data_processor.py",
+        "function": "export_data",
+        "line": 49,
+        "severity": "high",
+        "category": "security",
+        "title": "Path traversal in export_data()",
+        "description": "`export_data(records, filename)` joins an unvalidated user-controlled `filename` with the exports directory. A value like `../../etc/cron.d/evil` writes outside the intended directory.",
+        "recommendation": "Use `pathlib.Path(filename).name` to strip directory components, or validate against an allowlist."
+      }
+    ],
+    "severity_counts": {
+      "medium": 1,
+      "critical": 1,
+      "high": 1
+    }
+  },
+  "test_gap": {
+    "covered_functions": [],
+    "uncovered_functions": [
+      "sample_project/app/data_processor.py::build_query",
+      "sample_project/app/data_processor.py::fetch_records",
+      "sample_project/app/data_processor.py::process_user_input",
+      "sample_project/app/data_processor.py::export_data",
+      "sample_project/app/data_processor.py::calculate_statistics"
+    ],
+    "missing_edge_cases": [
+      "build_query with SQL injection payload \u2014 not tested",
+      "process_user_input with missing 'amount' key \u2014 not tested",
+      "process_user_input with non-numeric amount \u2014 not tested",
+      "export_data with path traversal filename \u2014 not tested",
+      "calculate_statistics with empty list \u2014 not tested"
+    ],
+    "gap_score": 1.0
+  },
+  "test_gen": {
+    "generated_tests": [
+      {
+        "function": "data_processor.py::build_query",
+        "test_code": "def test_build_query_sql_injection_risk():\n    \"\"\"build_query must not blindly interpolate user input.\"\"\"\n    from sample_project.app.data_processor import build_query\n    malicious = \"'; DROP TABLE users; --\"\n    query = build_query(\"users\", malicious)\n    # This test documents that the injection payload ends up verbatim in the query\n    assert malicious in query, \"Injection payload not found in query (test setup error)\"\n    # The real fix is to use parameterised queries so this assertion never holds.\n",
+        "rationale": "Shows that user input is interpolated verbatim into SQL \u2014 proves the SQL injection vulnerability."
+      }
+    ]
+  },
+  "test_run": {
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "output": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 189, in _run_module_as_main\n  File \"<frozen runpy>\", line 148, in _get_module_details\n  File \"<frozen runpy>\", line 112, in _get_module_details\n  File \"C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pytest\\__init__.py\", line 8, in <module>\n    from _pytest._code import ExceptionInfo\n  File \"C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\_code\\__init__.py\", line 5, in <module>\n    from .code import Code\n  File \"C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\_code\\code.py\", line 9, in <module>\n    import dataclasses\n  File \"C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\dataclasses.py\", line 5, in <module>\n    import inspect\n  File \"C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\inspect.py\", line 163, in <module>\n    from typing import _rewrite_star_unpack\n  File \"C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\typing.py\", line 2929, in <module>\n    class SupportsFloat(Protocol):\n    ...<6 lines>...\n            pass\n  File \"C:\\Users\\pc\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\typing.py\", line 2090, in __init__\n    if getattr(cls, \"_is_protocol\", False):\n       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nKeyboardInterrupt\n"
+  }
+}

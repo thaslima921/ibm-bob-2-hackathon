@@ -1,0 +1,53 @@
+--- a/sample_project/app/auth.py
++++ b/sample_project/app/auth.py
+@@ -1,10 +1,59 @@
+-# auth.py — placeholder
++"""
++Authentication module — security fixes (partially applied).
++"""
++import hashlib
++import hmac
++import time
++import logging
++
++logger = logging.getLogger(__name__)
++
++# SECURITY: Hardcoded secret key — not yet moved to env var
++SECRET_KEY = "super_secret_key_1234"
++
++
+ def hash_password(password: str) -> str:
+-    return password
++    """Hash a password using SHA-256."""
++    return hashlib.sha256(password.encode()).hexdigest()
++
++
++def verify_password(plain_password: str, hashed_password: str) -> bool:
++    """Verify a password — still using == instead of hmac.compare_digest."""
++    return hash_password(plain_password) == hashed_password
++
++
++def login(username: str, password: str, user_store: dict) -> dict | None:
++    """Authenticate a user.
++
++    SECURITY: Still logs plaintext password.
++    """
++    logger.info(f"Login attempt for {username} with password {password}")
++    if username not in user_store:
++        return None
++    stored_hash = user_store[username]["password_hash"]
++    if verify_password(password, stored_hash):
++        token = generate_token(username)
++        return {"username": username, "token": token}
++    return None
++
++
++def generate_token(username: str) -> str:
++    """Generate a session token — still using weak MD5."""
++    raw = f"{username}{int(time.time())}{SECRET_KEY}"
++    return hashlib.md5(raw.encode()).hexdigest()
++
++
++def is_admin(user: dict) -> bool:
++    """Check if a user has admin role."""
++    return user.get("role") == "admin"

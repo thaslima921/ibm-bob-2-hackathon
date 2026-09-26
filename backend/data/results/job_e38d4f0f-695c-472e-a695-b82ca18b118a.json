@@ -1,0 +1,16 @@
+{
+  "id": "e38d4f0f-695c-472e-a695-b82ca18b118a",
+  "status": "complete",
+  "diff_id": "diff_001",
+  "label": "Test run",
+  "created_at": "2026-09-26T08:08:57.846913+00:00",
+  "subagent_status": {
+    "impact": "done",
+    "code_review": "done",
+    "test_gap": "done",
+    "test_gen": "done",
+    "test_run": "done"
+  },
+  "report_id": "6ea50496-7a37-45e0-8fe3-12ba15fcae54",
+  "error": null
+}

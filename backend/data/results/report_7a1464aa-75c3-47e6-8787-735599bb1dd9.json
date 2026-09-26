@@ -1,0 +1,133 @@
+{
+  "id": "7a1464aa-75c3-47e6-8787-735599bb1dd9",
+  "job_id": "e3c32692-ecc0-4137-88b7-e0686fa3bdcc",
+  "diff_id": "diff_002_fix_login",
+  "label": "Fix login / authentication module",
+  "created_at": "2026-09-26T08:48:17.012496+00:00",
+  "release_verdict": "BLOCK",
+  "verdict_reasons": [
+    "2 critical finding(s) detected \u2014 immediate remediation required."
+  ],
+  "impact": {
+    "changed_files": [
+      {
+        "path": "sample_project/app/auth.py",
+        "added_lines": 29,
+        "removed_lines": 2,
+        "changed_functions": [
+          "hash_password",
+          "verify_password",
+          "login",
+          "generate_token",
+          "is_admin"
+        ]
+      }
+    ],
+    "changed_functions": [
+      "sample_project/app/auth.py::hash_password",
+      "sample_project/app/auth.py::verify_password",
+      "sample_project/app/auth.py::login",
+      "sample_project/app/auth.py::generate_token",
+      "sample_project/app/auth.py::is_admin"
+    ],
+    "ripple_risk_areas": [
+      {
+        "area": "All authenticated endpoints",
+        "reason": "Changes to token generation or password verification affect every authenticated API call.",
+        "severity": "critical"
+      },
+      {
+        "area": "Audit / compliance logging",
+        "reason": "Plaintext password logging contaminates audit logs and may trigger compliance violations.",
+        "severity": "high"
+      }
+    ]
+  },
+  "code_review": {
+    "bugs": [],
+    "quality_issues": [],
+    "security_issues": [
+      {
+        "id": "8055d4c5",
+        "file": "sample_project/app/auth.py",
+        "function": "",
+        "line": 17,
+        "severity": "critical",
+        "category": "security",
+        "title": "Hardcoded secret key",
+        "description": "`SECRET_KEY = 'super_secret_key_1234'` is a hardcoded credential in source code. Any developer with repository access can read this key, and it will leak via version control.",
+        "recommendation": "Load the key from an environment variable: `SECRET_KEY = os.environ['SECRET_KEY']`."
+      },
+      {
+        "id": "9216a26f",
+        "file": "sample_project/app/auth.py",
+        "function": "verify_password",
+        "line": 31,
+        "severity": "high",
+        "category": "security",
+        "title": "Timing-attack vulnerable password comparison",
+        "description": "`verify_password()` uses `==` for string comparison. Python's `==` short-circuits on the first differing byte, leaking timing information about the correct password length/prefix.",
+        "recommendation": "Use `hmac.compare_digest(hash_password(plain), hashed_password)` instead."
+      },
+      {
+        "id": "ed3740e4",
+        "file": "sample_project/app/auth.py",
+        "function": "login",
+        "line": 40,
+        "severity": "critical",
+        "category": "security",
+        "title": "Plaintext password logged",
+        "description": "`login()` calls `logger.info(f'... password {password}')`, writing the raw password to application logs. Anyone with log access can read user credentials.",
+        "recommendation": "Remove the password from the log statement entirely."
+      },
+      {
+        "id": "166fee1f",
+        "file": "sample_project/app/auth.py",
+        "function": "generate_token",
+        "line": 55,
+        "severity": "high",
+        "category": "security",
+        "title": "Weak token generation (MD5 + timestamp)",
+        "description": "`generate_token()` derives a token from `username + current_second + SECRET_KEY` then MD5-hashes it. MD5 is cryptographically broken, and the token is predictable within a small time window.",
+        "recommendation": "Replace with `secrets.token_hex(32)` for a cryptographically secure random token."
+      }
+    ],
+    "severity_counts": {
+      "critical": 2,
+      "high": 2
+    }
+  },
+  "test_gap": {
+    "covered_functions": [
+      "sample_project/app/auth.py::hash_password",
+      "sample_project/app/auth.py::verify_password",
+      "sample_project/app/auth.py::login",
+      "sample_project/app/auth.py::generate_token"
+    ],
+    "uncovered_functions": [
+      "sample_project/app/auth.py::is_admin"
+    ],
+    "missing_edge_cases": [
+      "login with wrong password should return None \u2014 not tested",
+      "login with unknown username should return None \u2014 not tested",
+      "generate_token uniqueness across calls \u2014 not tested",
+      "verify_password with empty string \u2014 not tested"
+    ],
+    "gap_score": 0.2
+  },
+  "test_gen": {
+    "generated_tests": [
+      {
+        "function": "auth.py::login",
+        "test_code": "def test_login_wrong_password_returns_none():\n    \"\"\"login() must return None for a wrong password.\"\"\"\n    from sample_project.app.auth import hash_password, login\n    store = {\"alice\": {\"password_hash\": hash_password(\"correct\"), \"role\": \"admin\"}}\n    result = login(\"alice\", \"wrong_password\", store)\n    assert result is None\n\ndef test_login_unknown_user_returns_none():\n    \"\"\"login() must return None for an unknown username.\"\"\"\n    from sample_project.app.auth import login\n    result = login(\"nobody\", \"password\", {})\n    assert result is None\n",
+        "rationale": "Tests the failure paths for login that are completely absent from the existing test suite."
+      }
+    ]
+  },
+  "test_run": {
+    "passed": 2,
+    "failed": 0,
+    "errors": 0,
+    "output": "============================= test session starts =============================\ncollecting ... collected 2 items\n\nsample_project/tests/cg_generated_m51puys9.py::test_login_wrong_password_returns_none PASSED [ 50%]\nsample_project/tests/cg_generated_m51puys9.py::test_login_unknown_user_returns_none PASSED [100%]\n\n============================== 2 passed in 0.05s ==============================\n"
+  }
+}
