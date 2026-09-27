@@ -1,4 +1,5 @@
 """ChangeGuard FastAPI backend entry point."""
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.routers.analysis import router as analysis_router
@@ -11,9 +12,19 @@ app = FastAPI(
     version="0.2.0",
 )
 
+# CORS origins: always include localhost for local dev.
+# Add the deployed frontend URL via the FRONTEND_URL environment variable.
+_default_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+_extra = os.environ.get("FRONTEND_URL", "").strip()
+if _extra:
+    _default_origins.append(_extra.rstrip("/"))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=_default_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

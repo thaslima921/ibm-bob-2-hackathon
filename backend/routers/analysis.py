@@ -13,7 +13,9 @@ router = APIRouter(prefix="/analysis", tags=["analysis"])
 async def start_analysis(req: AnalysisRequest, background_tasks: BackgroundTasks):
     job = AnalysisJob(diff_id=req.diff_id, label=req.label)
     store.save_job(job)
-    background_tasks.add_task(run_analysis, job, req.diff_text)
+    background_tasks.add_task(
+        run_analysis, job, req.diff_text, req.repository_id
+    )
     return job
 
 

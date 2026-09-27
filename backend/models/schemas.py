@@ -14,7 +14,11 @@ def _now() -> str:
 # ---------------------------------------------------------------------------
 
 class RepositoryScanRequest(BaseModel):
-    repository_path: str
+    # Exactly one of these must be provided:
+    # - repository_path: local filesystem path (local dev only)
+    # - github_url: public GitHub HTTPS URL
+    repository_path: str = ""
+    github_url: str = ""
     description: str = ""
 
 
@@ -53,6 +57,8 @@ class RepositoryScan(BaseModel):
     current_branch: str = ""
     latest_commit: str = ""
     recent_commits: list[RepoCommit] = []
+    # For remote repos: flag that test execution is disabled for safety
+    remote_repo: bool = False
     # status / errors
     error: str | None = None
 

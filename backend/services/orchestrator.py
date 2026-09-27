@@ -7,7 +7,7 @@ Steps:
   3. Analyse code & security (parallel conceptually, sequential here for simplicity)
   4. Analyse test gaps
   5. Generate tests for gaps
-  6. Run generated tests
+  6. Run generated tests  (skipped for remote repositories — untrusted code safety)
   7. Assemble the final report
   8. Persist job + report
 
@@ -16,7 +16,7 @@ This runs synchronously in a background thread (via FastAPI's run_in_executor).
 from __future__ import annotations
 import traceback
 
-from backend.models.schemas import AnalysisJob, SubagentStatus
+from backend.models.schemas import AnalysisJob, SubagentStatus, TestRunResult
 from backend.services.diff_parser import parse_diff
 from backend.services.analyzer import (
     analyse_impact,
@@ -26,7 +26,7 @@ from backend.services.analyzer import (
 )
 from backend.services.test_runner import run_existing_tests, run_generated_tests
 from backend.services.report_assembler import assemble_report
-from backend.services import store
+from backend.services import store, repo_store
 
 
 def _set_stage(job: AnalysisJob, stage: str, state: str) -> None:
@@ -34,11 +34,25 @@ def _set_stage(job: AnalysisJob, stage: str, state: str) -> None:
     store.save_job(job)
 
 
-def run_analysis(job: AnalysisJob, diff_text: str) -> None:
+def _is_remote_repo(repository_id: str | None) -> bool:
+    """Return True if the analysis is for a remotely cloned repository."""
+    if not repository_id:
+        return False
+    scan = repo_store.load_scan(repository_id)
+    return scan is not None and scan.remote_repo
+
+
+def run_analysis(
+    job: AnalysisJob,
+    diff_text: str,
+    repository_id: str | None = None,
+) -> None:
     """Execute the full analysis pipeline. Called in a background thread."""
     try:
         job.status = "running"
         store.save_job(job)
+
+        remote = _is_remote_repo(repository_id)
 
         # --- Stage 1: Parse diff ---
         parsed = parse_diff(diff_text)
@@ -65,12 +79,27 @@ def run_analysis(job: AnalysisJob, diff_text: str) -> None:
 
         # --- Stage 6: Run tests ---
         _set_stage(job, "test_run", "running")
-        # Combine all generated test code and run it
-        combined_code = "\n\n".join(t.test_code for t in test_gen.generated_tests)
-        if combined_code.strip():
-            test_run = run_generated_tests(combined_code)
+        if remote:
+            # Safety: never execute untrusted code from a remote repository
+            # on the server.  Test execution is skipped until a proper sandbox
+            # is available.
+            test_run = TestRunResult(
+                passed=0,
+                failed=0,
+                errors=0,
+                output=(
+                    "⚠ Test execution skipped for remote repositories.\n"
+                    "Running untrusted repository code on the server is disabled "
+                    "for security. Provide a local repository or a sandboxed "
+                    "execution environment to enable test runs."
+                ),
+            )
         else:
-            test_run = run_existing_tests()
+            combined_code = "\n\n".join(t.test_code for t in test_gen.generated_tests)
+            if combined_code.strip():
+                test_run = run_generated_tests(combined_code)
+            else:
+                test_run = run_existing_tests()
         _set_stage(job, "test_run", "done")
 
         # --- Stage 7: Assemble report ---

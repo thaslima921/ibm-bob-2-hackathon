@@ -19,11 +19,19 @@ async function request(path, options = {}) {
 
 export const api = {
   // ---- repository ----
-  scanRepository: (repositoryPath, description = '') =>
-    request('/repository/scan', {
+  // scanRepository accepts a GitHub HTTPS URL (preferred) or a local path.
+  // If the value starts with https://github.com it is sent as github_url;
+  // otherwise it is sent as repository_path (local dev).
+  scanRepository: (repoUrlOrPath, description = '') => {
+    const isGitHub = /^https:\/\/github\.com\//i.test((repoUrlOrPath || '').trim())
+    const body = isGitHub
+      ? { github_url: repoUrlOrPath.trim(), description }
+      : { repository_path: repoUrlOrPath.trim(), description }
+    return request('/repository/scan', {
       method: 'POST',
-      body: JSON.stringify({ repository_path: repositoryPath, description }),
-    }),
+      body: JSON.stringify(body),
+    })
+  },
 
   getRepository: (scanId) => request(`/repository/${scanId}`),
 
