@@ -3,7 +3,7 @@
  * Uses Vite proxy so all requests go to /analysis and /reports without CORS issues.
  */
 
-const BASE = ''  // proxied by Vite dev server
+const BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
 
 async function request(path, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
