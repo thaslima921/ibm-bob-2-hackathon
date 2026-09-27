@@ -3,7 +3,10 @@
  * Uses Vite proxy so all requests go to /analysis and /reports without CORS issues.
  */
 
-const BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+const BASE = (
+  import.meta.env.VITE_API_URL ||
+  'https://changeguard-backend.onrender.com'
+).replace(/\/$/, '')
 
 async function request(path, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
