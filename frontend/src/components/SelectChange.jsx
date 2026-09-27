@@ -39,9 +39,10 @@ export default function SelectChange({ scan, onSubmit, loading, onBack }) {
       // generate the diff client-side label and pass it through the existing
       // /analysis endpoint with the commit SHA as diff_id.
       // The diff text is fetched from the backend /repository/{id}/diff/{sha}
-      const res = await fetch(`/repository/${scan.id}/diff/${selectedSha}`)
-      if (!res.ok) throw new Error(`Failed to get diff: ${res.status}`)
-      const { diff_text } = await res.json()
+      const { diff_text } = await api.getRepositoryDiff(
+  scan.id,
+  selectedSha
+)
       onSubmit(
         `commit_${commit.short_sha}`,
         diff_text,

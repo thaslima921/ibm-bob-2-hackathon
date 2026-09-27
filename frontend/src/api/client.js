@@ -39,7 +39,8 @@ export const api = {
   getRepository: (scanId) => request(`/repository/${scanId}`),
 
   getRepositoryChanges: (scanId) => request(`/repository/${scanId}/changes`),
-
+  getRepositoryDiff: (scanId, sha) =>
+  request(`/repository/${scanId}/diff/${sha}`),
   // ---- analysis ----
   startAnalysis: (diffId, diffText, label, repositoryId = null, projectDescription = '') =>
     request('/analysis', {
